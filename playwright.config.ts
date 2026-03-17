@@ -11,6 +11,7 @@ export default defineConfig({
   reporter: [
     ["list"],
     ["html", { open: "on-failure", outputFolder: "playwright-report" }],
+    ["allure-playwright"],
   ],
   use: {
     baseURL: "https://tmdb-discover.surge.sh",
@@ -20,4 +21,3 @@ export default defineConfig({
     video: "retain-on-failure",
   },
 });
-
