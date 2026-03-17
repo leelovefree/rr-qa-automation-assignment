@@ -22,6 +22,7 @@ export class DiscoverPage {
   readonly resultTitles: Locator;
   readonly resultCards: Locator;
   readonly nextPageButton: Locator;
+  readonly selectedPage: Locator;
 
   constructor(page: Page) {
     this.page = page;
@@ -39,6 +40,7 @@ export class DiscoverPage {
     this.resultTitles = this.resultGrid.locator("p.text-blue-500");
     this.resultCards = this.resultGrid.locator("img[alt='Movie Poster']");
     this.nextPageButton = page.getByRole("button", { name: "Next page" });
+    this.selectedPage = page.locator("#react-paginate li.selected a");
   }
 
   async goto() {
@@ -135,6 +137,10 @@ export class DiscoverPage {
     }
 
     return results;
+  }
+
+  async getSelectedPageNumber() {
+    return (await this.selectedPage.innerText()).trim();
   }
 
   private async selectReactOption(control: Locator, input: Locator, value: string) {

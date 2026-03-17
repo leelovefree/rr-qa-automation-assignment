@@ -107,3 +107,19 @@ test("apply multiple filters together", async ({ page }) => {
   expect(cards.some((card) => card.genre === "Action")).toBeTruthy();
   expect(cards.some((card) => ["2024", "2025"].includes(card.year))).toBeTruthy();
 });
+
+test.only("pagination", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  const firstTitleBefore = (await discoverPage.getResultCardsData())[0].title;
+
+  await discoverPage.goToNextPage();
+
+  expect(await discoverPage.getSelectedPageNumber()).toBe("2");
+
+  const cardsAfter = await discoverPage.getResultCardsData();
+
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+  expect(cardsAfter[0].title).not.toBe(firstTitleBefore);
+});
