@@ -3,7 +3,8 @@ import { defineConfig } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   timeout: 60_000,
-  fullyParallel: true,
+  fullyParallel: false,
+  workers:1,
   expect: {
     timeout: 10_000,
   },
@@ -19,3 +20,4 @@ export default defineConfig({
     video: "retain-on-failure",
   },
 });
+

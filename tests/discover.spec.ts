@@ -10,7 +10,7 @@ test("default page load", async ({ page }) => {
   await expect(discoverPage.resultCards.first()).toBeVisible();
 });
 
-test.only("categories navigation", async ({ page }) => {
+test("categories navigation", async ({ page }) => {
   const discoverPage = new DiscoverPage(page);
 
   await discoverPage.goto();
@@ -25,5 +25,65 @@ test.only("categories navigation", async ({ page }) => {
 
   await discoverPage.selectCategory("Popular");
   await expect(page).toHaveURL(/\/popular$/);
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+});
+
+test("search by title", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  await discoverPage.searchByTitle("Avatar");
+
+  const titles = await discoverPage.getResultTitles();
+
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+  expect(titles.join(" ")).toContain("Avatar");
+});
+
+test("filter by type", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  await discoverPage.selectType("TV Shows");
+
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+});
+
+test("filter by year", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  await discoverPage.selectYearRange("2024", "2025");
+
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+});
+
+test("filter by rating", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  await discoverPage.setMinimumRating(3);
+
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+});
+
+test("filter by genre", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  await discoverPage.selectGenre("Action");
+
+  await expect(discoverPage.resultCards.first()).toBeVisible();
+});
+
+test("apply multiple filters together", async ({ page }) => {
+  const discoverPage = new DiscoverPage(page);
+
+  await discoverPage.goto();
+  await discoverPage.selectType("Movie");
+  await discoverPage.selectGenre("Action");
+  await discoverPage.selectYearRange("2024", "2025");
+  await discoverPage.setMinimumRating(3);
+
   await expect(discoverPage.resultCards.first()).toBeVisible();
 });
