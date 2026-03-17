@@ -42,13 +42,29 @@ test("categories navigation", async ({ page }) => {
 
 test("search by title", async ({ page }) => {
   const discoverPage = new DiscoverPage(page);
+  let responseData: { results?: Array<{ title?: string; name?: string }> } = {};
+  let responseUrl = "";
 
   await test.step("Open the default page", async () => {
     await discoverPage.goto();
   });
 
   await test.step("Search for Avatar", async () => {
+    const responsePromise = page.waitForResponse((response) => {
+      return response.url().includes("search") && response.status() === 200;
+    });
+
     await discoverPage.searchByTitle("Avatar");
+
+    const response = await responsePromise;
+    responseUrl = response.url();
+    responseData = await response.json();
+  });
+
+  await test.step("Verify search API response", async () => {
+    expect(responseUrl).toContain("Avatar");
+    expect(responseData.results).toBeDefined();
+    expect(responseData.results?.length).toBeGreaterThan(0);
   });
 
   await test.step("Verify search results match the keyword", async () => {
@@ -65,13 +81,29 @@ test("search by title", async ({ page }) => {
 
 test("filter by type", async ({ page }) => {
   const discoverPage = new DiscoverPage(page);
+  let responseUrl = "";
 
   await test.step("Open the default page", async () => {
     await discoverPage.goto();
   });
 
   await test.step("Change type to TV Shows", async () => {
+    const responsePromise = page.waitForResponse((response) => {
+      const url = response.url();
+      return (
+        response.status() === 200 &&
+        (url.includes("/tv/") || url.includes("discover/tv") || url.includes("trending/tv"))
+      );
+    });
+
     await discoverPage.selectType("TV Shows");
+
+    const response = await responsePromise;
+    responseUrl = response.url();
+  });
+
+  await test.step("Verify type-related API response", async () => {
+    expect(responseUrl).toContain("tv");
   });
 
   await test.step("Verify results are displayed", async () => {

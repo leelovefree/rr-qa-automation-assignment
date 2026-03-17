@@ -83,3 +83,12 @@ For failed tests, Playwright also provides useful debugging artifacts:
 - screenshot
 - video
 - trace
+
+## Browser API assertions
+Some tests also use browser API assertions in addition to UI checks.
+
+Examples:
+- `search by title`: wait for the search response and verify the response contains data
+- `filter by type`: verify the application calls a TV-related endpoint when switching to `TV Shows`
+
+This helps confirm that the UI behavior matches the underlying API behavior.
