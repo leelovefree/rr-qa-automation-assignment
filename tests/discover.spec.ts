@@ -34,10 +34,14 @@ test("search by title", async ({ page }) => {
   await discoverPage.goto();
   await discoverPage.searchByTitle("Avatar");
 
-  const titles = await discoverPage.getResultTitles();
+  const cards = await discoverPage.getResultCardsData();
 
   await expect(discoverPage.resultCards.first()).toBeVisible();
-  expect(titles.join(" ")).toContain("Avatar");
+  expect(cards.length).toBeGreaterThan(0);
+
+  for (const card of cards) {
+    expect(card.title).toContain("Avatar");
+  }
 });
 
 test("filter by type", async ({ page }) => {
@@ -55,7 +59,12 @@ test("filter by year", async ({ page }) => {
   await discoverPage.goto();
   await discoverPage.selectYearRange("2024", "2025");
 
+  const cards = await discoverPage.getResultCardsData();
+
   await expect(discoverPage.resultCards.first()).toBeVisible();
+  expect(cards.length).toBeGreaterThan(0);
+
+  expect(cards.some((card) => ["2024", "2025"].includes(card.year))).toBeTruthy();
 });
 
 test("filter by rating", async ({ page }) => {
@@ -73,7 +82,12 @@ test("filter by genre", async ({ page }) => {
   await discoverPage.goto();
   await discoverPage.selectGenre("Action");
 
+  const cards = await discoverPage.getResultCardsData();
+
   await expect(discoverPage.resultCards.first()).toBeVisible();
+  expect(cards.length).toBeGreaterThan(0);
+
+  expect(cards.some((card) => card.genre === "Action")).toBeTruthy();
 });
 
 test("apply multiple filters together", async ({ page }) => {
@@ -85,5 +99,11 @@ test("apply multiple filters together", async ({ page }) => {
   await discoverPage.selectYearRange("2024", "2025");
   await discoverPage.setMinimumRating(3);
 
+  const cards = await discoverPage.getResultCardsData();
+
   await expect(discoverPage.resultCards.first()).toBeVisible();
+  expect(cards.length).toBeGreaterThan(0);
+
+  expect(cards.some((card) => card.genre === "Action")).toBeTruthy();
+  expect(cards.some((card) => ["2024", "2025"].includes(card.year))).toBeTruthy();
 });
